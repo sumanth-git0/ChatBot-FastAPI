@@ -1,0 +1,20 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM")
+KEYCLOAK_API_URL = os.getenv("KEYCLOAK_API_URL")
+KEYCLOAK_CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
+KEYCLOAK_CLIENT_SECRET = os.getenv("KEYCLOAK_CLIENT_SECRET")
+KEYCLOAK_ADMIN_USERNAME = os.getenv("KEYCLOAK_ADMIN_USERNAME")
+KEYCLOAK_ADMIN_PASSWORD = os.getenv("KEYCLOAK_ADMIN_PASSWORD")
+
+KEYCLOAK_ISSUER = f"{KEYCLOAK_API_URL}/realms/{KEYCLOAK_REALM}"
+KEYCLOAK_JWKS_URL = f"{KEYCLOAK_ISSUER}/protocol/openid-connect/certs"
+KEYCLOAK_TOKEN_URL = f"{KEYCLOAK_API_URL}/realms/master/protocol/openid-connect/token"
+
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
