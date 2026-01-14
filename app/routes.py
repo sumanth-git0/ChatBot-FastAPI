@@ -57,3 +57,24 @@ def invoke(invokerequest: InvokeRequest,db: Session = Depends(get_db)):
     return response
     
 
+# ------------------
+# Ingestion router
+# ------------------
+from fastapi import UploadFile, File
+import os
+import shutil
+
+UPLOAD_DIR = "uploaded_docs"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+ingestion_router = APIRouter(prefix="/ingest", tags=["Ingestion"])
+
+@ingestion_router.post("/")
+async def ingest(file: UploadFile = File(...)):
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {"message": "File saved successfully"}

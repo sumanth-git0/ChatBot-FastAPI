@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
-from .routes import users_router, chats_router
+from .routes import users_router, chats_router, ingestion_router
 from fastapi.middleware.cors import CORSMiddleware
 
 KEYCLOAK_URL = "http://localhost:8080/realms/myrealm"
@@ -30,6 +30,7 @@ app.add_middleware(
 
 app.include_router(users_router)
 app.include_router(chats_router)
+app.include_router(ingestion_router)
 
 @app.get("/")
 def health():

@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
+from uuid import UUID
 
 class UserCreate(BaseModel):
     name: str
@@ -7,7 +8,7 @@ class UserCreate(BaseModel):
     password: Optional[str] = ""
 
 class UserResponse(UserCreate):
-    id: int
+    id: UUID
 
     class Config:
         from_attributes = True
