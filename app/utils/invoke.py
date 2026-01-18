@@ -1,9 +1,9 @@
 from groq import Groq
 from sqlalchemy.orm import Session
-
 from app import settings
 from app.crud.chat import create_chat, get_chats_by_user_id
 from app.schemas.chat import ChatCreate
+from pathlib import Path
 
 groq_api_key = settings.GROQ_API_KEY
 
@@ -11,7 +11,10 @@ def rag_chat(messages, question):
     from app.utils.embeddings import ingest_document
     from app.utils.embeddings import retrieve_context
 
-    file_path = r"C:\Users\SUMANTH\OneDrive\Desktop\Change\Service_Account_Authentication_GIDR.pdf"
+    BASE_DIR = Path(__file__).resolve().parents[2]
+
+    file_path = BASE_DIR / "uploaded_docs" / "Word Power Made Easy PDF.pdf"
+    
     vector_store = ingest_document(file_path)
 
     context = retrieve_context(question, vector_store)

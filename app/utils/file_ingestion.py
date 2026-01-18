@@ -19,13 +19,3 @@ def extract_text(file_path):
     else:
         raise ValueError("Unsupported file type")
 
-
-# def ingest_document(file_path):
-#     text = extract_text(file_path)
-#     chunks = chunk_text(text)
-#     vector_store.add_texts(chunks)
-
-
-# def retrieve_context(question, k=5):
-#     docs = vector_store.similarity_search(question, k=k)
-#     return "\n\n".join(d.page_content for d in docs)

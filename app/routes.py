@@ -1,20 +1,21 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Form
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
+from app.crud.document import create_document
 from app.crud.user import get_user_by_id, signup_user
 from app.schemas.chat import InvokeRequest
-from app.utils.invoke import get_response, llm_invoke
+from app.schemas.document import DocumentCreate
+from app.utils.invoke import llm_invoke
 
 from .database import get_db
 from .crud import (
     get_users,
     create_user,
-    create_chat,
     get_chats,
     get_chats_by_user_id,
 )
-from .schemas import UserCreate, UserResponse, ChatCreate, ChatResponse
+from .schemas import UserCreate, UserResponse, ChatResponse
 
 # ------------------
 # Users router
@@ -71,10 +72,24 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 ingestion_router = APIRouter(prefix="/ingest", tags=["Ingestion"])
 
 @ingestion_router.post("/")
-async def ingest(file: UploadFile = File(...)):
+async def ingest(
+    file: UploadFile = File(...),
+    user_id: str = Form(...),
+    db: Session = Depends(get_db),
+):
     file_path = os.path.join(UPLOAD_DIR, file.filename)
 
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
+
+    create_document(
+        db,
+        DocumentCreate(
+            file_name=file.filename,
+            file_type=file.content_type,
+            user_id=user_id,
+            status='Success',
+        ),
+    )
 
     return {"message": "File saved successfully"}

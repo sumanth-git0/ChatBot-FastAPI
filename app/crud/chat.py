@@ -4,11 +4,11 @@ from app.schemas.chat import ChatCreate
 
 
 def create_chat(db: Session, chat: ChatCreate):
-    db_user = Chat(user_id=chat.user_id, query=chat.query, response=chat.response)
-    db.add(db_user)
+    db_chat = Chat(user_id=chat.user_id, query=chat.query, response=chat.response)
+    db.add(db_chat)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(db_chat)
+    return db_chat
 
 def get_chats(db: Session):
     return db.query(Chat).all()
