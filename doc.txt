@@ -7,3 +7,4 @@ pip install python-jose[cryptography] httpx pgvector
 mkdir app
 ni app\main.py, app\database.py, app\models.py, app\schemas.py, app\crud.py, app\__init__.py
 
+sudo net stop postgresql-x64-16

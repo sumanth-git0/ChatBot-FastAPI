@@ -2,9 +2,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
+from app.models.chunks import Chunk
 from app.utils.file_ingestion import extract_text
 
-def chunk_text(text):
+async def chunk_text(text):
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500,
         chunk_overlap=100
@@ -16,24 +17,21 @@ embeddings = HuggingFaceEmbeddings(
 )
 
 
-def getvector_store(vector_store):
-    if vector_store is None:
-        vector_store = FAISS.from_texts([], embeddings)
-    return vector_store
 
-def ingest_document(file_path, vector_store=None):
-    text = extract_text(file_path)
-    chunks = chunk_text(text)
+async def ingest_document(file_path, document_id: str, user_id: str, db):
+    text = await extract_text(file_path)
+    chunked_text = await chunk_text(text)
 
-    if vector_store is None:
-        vector_store = FAISS.from_texts(chunks, embeddings)
-    else:
-        vector_store.add_texts(chunks)
+    for i, chunk in enumerate(chunked_text):
+        embedding = embeddings.embed_documents([chunk])[0]
 
-    return vector_store
-
-
-
-def retrieve_context(question, vector_store, k=5):
-    docs = vector_store.similarity_search(question, k=k)
-    return "\n\n".join(d.page_content for d in docs)
+        db_chunk = Chunk(
+            document_id=document_id,
+            user_id=user_id,
+            source_id=file_path,
+            chunk_index=i,
+            content=chunk,
+            embedding=embedding,
+        )
+        db.add(db_chunk)
+    db.commit()

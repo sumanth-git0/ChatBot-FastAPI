@@ -6,6 +6,7 @@ from app.crud.document import create_document
 from app.crud.user import get_user_by_id, signup_user
 from app.schemas.chat import InvokeRequest
 from app.schemas.document import DocumentCreate
+from app.utils.embeddings import ingest_document
 from app.utils.invoke import llm_invoke
 
 from .database import get_db
@@ -82,7 +83,7 @@ async def ingest(
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    create_document(
+    db_document = create_document(
         db,
         DocumentCreate(
             file_name=file.filename,
@@ -91,5 +92,7 @@ async def ingest(
             status='Success',
         ),
     )
+
+    await ingest_document(file_path, document_id=db_document.id, user_id=user_id, db=db)
 
     return {"message": "File saved successfully"}
